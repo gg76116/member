@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>尊榮會員專區 | 沐林&沐靈美學</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* 五行色彩配置：金(銀白)、水(深藍)、木(青綠) */
+            --color-gold: #f8f9fa;
+            --color-silver: #ccd6f6;
+            --color-water-deep: #020c1b;
+            --color-water-light: #112240;
+            --color-wood: #64ffda;
+        }
+
+        body {
+            background-color: var(--color-water-deep);
+            color: var(--color-silver);
+            font-family: 'Noto Sans TC', 'PingFang TC', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, var(--color-water-light) 0%, var(--color-water-deep) 100%);
+            z-index: -1;
+        }
+
+        /* 磨砂玻璃框 - 金元素(專業質感) */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-style {
+            background: rgba(10, 25, 47, 0.8);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            color: white;
+            text-align: center;
+            letter-spacing: 0.5em;
+            transition: all 0.3s ease;
+        }
+
+        .input-style:focus {
+            border-color: var(--color-wood);
+            outline: none;
+            box-shadow: 0 0 15px rgba(100, 255, 218, 0.2);
+        }
+
+        /* 圖片區樣式 */
+        #gallery {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            padding: 40px 20px;
+        }
+
+        .image-card {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: slideUp 0.8s ease forwards;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: auto;
+            display: none;
+        }
+
+        .status-box {
+            padding: 40px;
+            text-align: center;
+            color: var(--color-wood);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .shake { animation: shake 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- 驗證區域 -->
+    <div id="auth-section" class="glass-panel p-10 w-full max-w-sm mx-4 text-center">
+        <div class="mb-10">
+            <div class="w-16 h-16 rounded-full border border-[#64ffda]/30 flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-lock-open text-xl text-[#64ffda] opacity-70"></i>
+            </div>
+            <h1 class="text-sm tracking-[0.6em] text-white/60 mb-2 uppercase">Member Access</h1>
+            <p class="text-[10px] text-white/30 italic">沐林 & 沐靈美學工作室</p>
+        </div>
+
+        <div class="space-y-6">
+            <input type="password" id="password" placeholder="輸入密碼" class="input-style w-full py-4 rounded-2xl font-bold">
+            <button onclick="verify()" class="w-full py-4 rounded-2xl border border-[#64ffda] text-[#64ffda] hover:bg-[#64ffda]/10 transition-all font-bold text-xs tracking-widest">
+                VERIFY & ENTER
+            </button>
+            <p id="error" class="text-red-400 text-[10px] opacity-0">密碼不正確</p>
+        </div>
+    </div>
+
+    <!-- 影像展示區 -->
+    <div id="gallery">
+        <!-- 影像 1 -->
+        <div class="image-card" id="card1">
+            <div class="status-box" id="msg1">
+                <i class="fas fa-spinner fa-spin mb-3"></i><br>
+                正在匹配 1000050228 影像檔...
+            </div>
+        </div>
+
+        <!-- 影像 2 -->
+        <div class="image-card" id="card2">
+            <div class="status-box" id="msg2">
+                <i class="fas fa-spinner fa-spin mb-3"></i><br>
+                正在匹配 1000050229 影像檔...
+            </div>
+        </div>
+
+        <footer class="text-center py-10 opacity-20 text-[9px] tracking-[0.5em] uppercase">
+            Mulin & Muling Esthetics © 2025
+        </footer>
+    </div>
+
+    <script>
+        const PIN = "88888888"; // 這裡可以改密碼
+
+        // 智慧掃描函數：同時掃描多種常見副檔名
+        function smartLoad(baseName, cardId, msgId) {
+            const card = document.getElementById(cardId);
+            const msg = document.getElementById(msgId);
+            const extensions = ['png', 'jpg', 'jpeg', 'PNG', 'JPG', 'JPEG'];
+            let found = false;
+
+            extensions.forEach(ext => {
+                const img = new Image();
+                img.src = baseName + '.' + ext;
+                
+                img.onload = function() {
+                    if (!found) {
+                        found = true;
+                        msg.style.display = 'none';
+                        img.style.display = 'block';
+                        img.className = "w-full h-auto";
+                        card.appendChild(img);
+                    }
+                };
+            });
+
+            // 如果5秒後都沒反應，給出明確教學
+            setTimeout(() => {
+                if (!found) {
+                    msg.innerHTML = `
+                        <i class="fas fa-exclamation-circle mb-3 opacity-50"></i><br>
+                        找不到 ${baseName} 檔案<br>
+                        <div style="font-size:10px; opacity:0.6; margin-top:10px; line-height:1.6">
+                            請確認：<br>
+                            1. 圖片檔案與此網頁在同一個資料夾<br>
+                            2. 圖片檔名剛好是 ${baseName}<br>
+                            (請檢查有無多餘空格或(1)字樣)
+                        </div>
+                    `;
+                }
+            }, 5000);
+        }
+
+        function verify() {
+            const input = document.getElementById('password').value;
+            const auth = document.getElementById('auth-section');
+            const gallery = document.getElementById('gallery');
+            const err = document.getElementById('error');
+
+            if (input === PIN) {
+                auth.style.display = 'none';
+                gallery.style.display = 'block';
+                document.body.style.alignItems = 'flex-start';
+                
+                // 啟動智慧加載
+                smartLoad('1000050228', 'card1', 'msg1');
+                smartLoad('1000050229', 'card2', 'msg2');
+                window.scrollTo(0, 0);
+            } else {
+                const section = document.getElementById('auth-section');
+                section.classList.add('shake');
+                err.style.opacity = '1';
+                setTimeout(() => section.classList.remove('shake'), 400);
+            }
+        }
+
+        document.getElementById('password').addEventListener('keypress', (e) => { if (e.key === 'Enter') verify(); });
+    </script>
+</body>
+</html>
