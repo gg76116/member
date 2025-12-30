@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>尊榮會員專區 | 沐林&沐靈美學</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            /* 五行配色：水(深藍)、金(銀白)、木(青綠) */
+            --color-water: #020c1b;
+            --color-gold: #ccd6f6;
+            --color-wood: #64ffda;
+        }
+
+        body {
+            background-color: var(--color-water);
+            color: var(--color-gold);
+            font-family: 'Noto Sans TC', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #112240 0%, #020c1b 100%);
+            z-index: -1;
+        }
+
+        /* 磨砂玻璃質感卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        .input-style {
+            background: rgba(10, 25, 47, 0.8);
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            color: white;
+            text-align: center;
+            letter-spacing: 0.5em;
+            padding: 1rem;
+            border-radius: 15px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            font-size: 16px;
+        }
+
+        #gallery {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            animation: slideUp 1s ease-out forwards;
+        }
+
+        .img-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <!-- 驗證區域 -->
+    <div id="login-box" class="glass-card">
+        <div class="mb-10">
+            <i class="fas fa-lock text-4xl text-[#64ffda] mb-4 opacity-70"></i>
+            <h1 class="text-xs tracking-[0.5em] text-white/50 uppercase">Security Check</h1>
+            <p class="text-[9px] text-white/20 mt-1 tracking-widest">沐林 & 沐靈美學工作室</p>
+        </div>
+
+        <input type="password" id="pw" placeholder="輸入密碼" class="input-style">
+        
+        <button onclick="unlock()" class="w-full py-4 rounded-2xl border border-[#64ffda] text-[#64ffda] hover:bg-[#64ffda]/10 transition-all font-bold text-xs tracking-widest">
+            確認進入
+        </button>
+        
+        <p id="err" class="text-red-400 text-[10px] mt-4 opacity-0 transition-opacity">密碼驗證失敗</p>
+    </div>
+
+    <!-- 影像展示區域 -->
+    <div id="gallery">
+        <div class="img-item" id="c1">
+            <div id="m1" class="p-20 text-center text-[10px] text-[#64ffda]/40">
+                <i class="fas fa-spinner fa-spin mr-2"></i>影像匹配中...
+            </div>
+        </div>
+        <div class="img-item" id="c2">
+            <div id="m2" class="p-20 text-center text-[10px] text-[#64ffda]/40">
+                <i class="fas fa-spinner fa-spin mr-2"></i>影像匹配中...
+            </div>
+        </div>
+        <footer class="text-center py-10 opacity-20 text-[9px] tracking-[0.6em]">
+            MULIN & MULING ESTHETICS © 2025
+        </footer>
+    </div>
+
+    <script>
+        // 設定您的專屬密碼 (在此修改)
+        const PIN = "8888"; 
+
+        function unlock() {
+            const val = document.getElementById('pw').value;
+            if (val === PIN) {
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('gallery').style.display = 'block';
+                document.body.style.alignItems = 'flex-start';
+                
+                // 開始讀取圖片
+                findImg('1000050228', 'c1', 'm1');
+                findImg('1000050229', 'c2', 'm2');
+                window.scrollTo(0, 0);
+            } else {
+                document.getElementById('err').style.opacity = '1';
+                setTimeout(() => document.getElementById('err').style.opacity = '0', 2000);
+            }
+        }
+
+        function findImg(name, boxId, msgId) {
+            const box = document.getElementById(boxId);
+            const msg = document.getElementById(msgId);
+            const exts = ['png', 'PNG', 'jpg', 'JPG', 'jpeg', 'JPEG'];
+            let found = false;
+
+            exts.forEach(ext => {
+                const img = new Image();
+                img.src = "./" + name + "." + ext;
+                img.onload = () => {
+                    if (!found) {
+                        found = true;
+                        msg.style.display = 'none';
+                        img.className = "w-full h-auto";
+                        box.appendChild(img);
+                    }
+                }
+            });
+        }
+
+        // 手機鍵盤 Enter 觸發
+        document.getElementById('pw').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') unlock();
+        });
+    </script>
+</body>
+</html>
